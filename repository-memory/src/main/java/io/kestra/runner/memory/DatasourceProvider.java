@@ -53,12 +53,13 @@ public class DatasourceProvider {
 
     public static class H2RepositoryOrQueue implements Condition {
         @Override
+        //Determines if the current repository type is an in-memory database (h2 or memory).
         public boolean matches(ConditionContext context) {
             Optional<String> repositoryType = context.getProperty("kestra.repository.type", String.class);
             if (repositoryType.isPresent() && (repositoryType.get().equals("h2") || repositoryType.get().equals("memory"))) {
                 return true;
             }
-
+            //Checks if the queue type is an in-memory database (h2 or memory) by retrieving the configuration property
             Optional<String> queueType = context.getProperty("kestra.queue.type", String.class);
             return queueType.isPresent() && (queueType.get().equals("h2") || queueType.get().equals("memory"));
         }
