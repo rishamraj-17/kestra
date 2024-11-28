@@ -82,19 +82,23 @@ public abstract class StorageTestSuite {
     }
 
     private void get(String tenantId, String prefix) throws Exception {
+        //creating files : /{prefix}/storage/get.yml
         putFile(tenantId, "/" + prefix + "/storage/get.yml");
         putFile(tenantId, "/" + prefix + "/storage/level2/2.yml");
 
+        //Retrieve using get.yml
         URI item = new URI("/" + prefix + "/storage/get.yml");
         InputStream get = storageInterface.get(tenantId, prefix, item);
         assertThat(CharStreams.toString(new InputStreamReader(get)), is(CONTENT_STRING));
+        //verify file existence using storageInterface.exists()
         assertTrue(storageInterface.exists(tenantId, prefix, item));
     }
 
+    //To verify security of storage interface by preventing directory traversal attacks
     @Test
     void getNoTraversal() throws Exception {
-        String prefix = IdUtils.create();
-        String tenantId = IdUtils.create();
+        String prefix = IdUtils.create();//Generates a unique identifier for the file path prefix
+        String tenantId = IdUtils.create();//Creates a unique tenant identifier
 
 
         putFile(tenantId, "/" + prefix + "/storage/get.yml");
@@ -110,6 +114,7 @@ public abstract class StorageTestSuite {
         String prefix = IdUtils.create();
         String tenantId = IdUtils.create();
 
+        //Attempts to retrieve non-existent file
         assertThrows(FileNotFoundException.class, () -> {
             storageInterface.get(tenantId, prefix, new URI("/" + prefix + "/storage/missing.yml"));
         });
